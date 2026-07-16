@@ -4,6 +4,7 @@ import { requireUser } from "@/features/auth/action/require-user";
 import { prisma } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import {convertToModelMessages, createIdGenerator, createUIMessageStreamResponse, streamText, toUIMessageStream, type UIMessage} from "ai"
+import { ratelimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
     await auth.protect()
@@ -15,6 +16,22 @@ export async function POST(req: Request) {
     }
 
     const user = await requireUser();
+
+    try {
+        const { success, limit, reset, remaining } = await ratelimit.limit(user.id);
+        if (!success) {
+            return new Response("Too Many Requests. Please wait a minute and try again.", {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Limit": limit.toString(),
+                    "X-RateLimit-Remaining": remaining.toString(),
+                    "X-RateLimit-Reset": reset.toString(),
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Rate limiting check failed, allowing request:", error);
+    }
 
     const conversation = await prisma.conversation.findFirst({
         where: {
