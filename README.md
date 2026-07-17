@@ -1,6 +1,6 @@
 # ChaiGPT (ChatGPT Clone)
 
-**Live Project Deployment**: [chai-persona.vercel.app](https://chai-aur-code-gpt.vercel.app/)
+**Live Project Deployment**: [chai-aur-code-gpt.vercel.app](https://chai-aur-code-gpt.vercel.app/)
 
 ChaiGPT is a minimalistic, high-performance, and feature-rich ChatGPT clone built with Next.js, Tailwind CSS, Prisma, the Vercel AI SDK, and Clerk Authentication.
 
