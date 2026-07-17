@@ -40,6 +40,7 @@ model Conversation {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   messages Message[]
+  branches Branch[]
 
   @@index([userId, lastMessageAt(sort: Desc)])
   @@index([userId, isPinned, lastMessageAt(sort: Desc)])
@@ -66,10 +67,27 @@ model Message {
   content        String        @db.Text
   parts          Json?
   metadata       Json?
+  parentId       String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  parent       Message?     @relation("MessageHierrarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Message[]    @relation("MessageHierrarchy")
 
   @@index([conversationId, createdAt(sort: Desc)])
+  @@index([parentId])
+}
+
+model Branch {
+  id             String   @id @default(cuid())
+  conversationId String
+  name           String   @default("Main")
+  leafMessageId  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
 }

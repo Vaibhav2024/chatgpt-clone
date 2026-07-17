@@ -52,12 +52,22 @@ export async function getConversation(conversationId: string) {
 export async function createConversation(title = "New Chat") {
     const user = await requireUser();
 
-    return prisma.conversation.create({
+    const conversation = await prisma.conversation.create({
         data: {
             userId: user.id,
-            title: title.trim() || "New Chat"
-        }
-    }) 
+            title: title.trim() || "New Chat",
+            branches: {
+                create: { name: "Main" }
+            }
+        },
+        include: { branches: true }
+    });
+
+    return {
+        id: conversation.id,
+        branchId: conversation.branches[0].id,
+        title: conversation.title,
+    };
 }
 
 export async function deleteConversation(conversationId: string) {
