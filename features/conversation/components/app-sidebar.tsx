@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -9,6 +10,8 @@ import {
   PinOffIcon,
   PlusIcon,
   Trash2Icon,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
@@ -79,9 +82,13 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="New chat" render={<Link href="/" />}>
-              <PlusIcon />
-              <span>New chat</span>
+            <SidebarMenuButton 
+              tooltip="New chat" 
+              render={<Link href="/" />}
+              className="bg-accent/40 hover:bg-accent/80 border border-border/10 transition-colors"
+            >
+              <PlusIcon className="size-4" />
+              <span className="font-semibold">New chat</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -227,19 +234,51 @@ function ChatItem({
 /** Footer menu with theme toggle and Clerk user account button. */
 function SidebarFooterMenu() {
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip="Toggle theme"
+            className="text-muted-foreground transition-colors"
+          >
+            <Sun className="size-4 opacity-0" />
+            <span>Theme toggle</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <div className="flex items-center gap-2 px-1 py-1.5">
+            <div className="size-8 rounded-full bg-muted animate-pulse" />
+            <span className="truncate text-sm text-muted-foreground/60">
+              Account
+            </span>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start"
+        <SidebarMenuButton
+          tooltip="Toggle theme"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          className="text-muted-foreground hover:text-foreground transition-colors"
         >
-          Toggle theme
-        </Button>
+          {resolvedTheme === "dark" ? (
+            <Sun className="size-4" />
+          ) : (
+            <Moon className="size-4" />
+          )}
+          <span>{resolvedTheme === "dark" ? "Light theme" : "Dark theme"}</span>
+        </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
         <div className="flex items-center gap-2 px-1 py-1.5">

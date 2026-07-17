@@ -65,7 +65,7 @@ export function ChatComposer({
             onSubmit={(event) => void handleSubmit(event)}
             className={cn("mx-auto w-full max-w-3xl px-4 pb-4 md:px-6", className)}
         >
-            <InputGroup className="h-auto min-h-14 rounded-3xl border-border/80 bg-background shadow-sm dark:bg-input/40">
+            <InputGroup className="h-auto min-h-14 rounded-[26px] border border-border/40 bg-muted/30 focus-within:bg-background focus-within:border-border/80 focus-within:ring-2 focus-within:ring-border/10 transition-all duration-300 shadow-sm dark:bg-muted/10">
                 <InputGroupTextarea
                     ref={textareaRef}
                     value={value}
@@ -74,22 +74,27 @@ export function ChatComposer({
                     placeholder={placeholder}
                     disabled={isSending}
                     rows={1}
-                    className="max-h-48 min-h-12 py-3.5 pl-4 text-[15px] leading-relaxed"
+                    className="max-h-48 min-h-12 py-3.5 pl-5 text-[15px] leading-relaxed placeholder:text-muted-foreground/60 focus-visible:outline-none"
                 />
-                <InputGroupAddon align="inline-end" className="pr-2 pb-2 self-end">
+                <InputGroupAddon align="inline-end" className="pr-2.5 pb-2.5 self-end">
                     <InputGroupButton
                         type="submit"
                         size="icon-sm"
                         variant="default"
                         disabled={!canSend}
-                        className="size-9 rounded-full"
+                        className={cn(
+                            "size-8 rounded-full transition-all duration-300",
+                            canSend
+                                ? "bg-foreground text-background hover:scale-105"
+                                : "bg-muted/65 text-muted-foreground/45"
+                        )}
                         aria-label="Send message"
                     >
-                        {isSending ? <Spinner /> : <ArrowUpIcon />}
+                        {isSending ? <Spinner className="size-4" /> : <ArrowUpIcon className="size-4" />}
                     </InputGroupButton>
                 </InputGroupAddon>
             </InputGroup>
-            <p className="mt-2 text-center text-xs text-muted-foreground">
+            <p className="mt-2.5 text-center text-xs text-muted-foreground/65 tracking-tight">
                 ChaiGPT can make mistakes. Check important info.
             </p>
         </form>

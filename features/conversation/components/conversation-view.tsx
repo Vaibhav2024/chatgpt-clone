@@ -64,11 +64,11 @@ export const ConversationView = ({
         conversations?.find((item) => item.id === conversationId)?.title ?? "Chat";
 
     return (
-        <div className="flex h-full min-h-0 flex-1 flex-col">
-            <header className="flex h-14 shrink-0 items-center gap-2 border-b px-3">
-                <SidebarTrigger />
-                <Separator orientation="vertical" className="mx-1 h-4" />
-                <h1 className="flex-1 truncate text-sm font-medium">{title}</h1>
+        <div className="flex h-full min-h-0 flex-1 flex-col bg-background">
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border/40 px-4 bg-background/80 backdrop-blur-md sticky top-0 z-10">
+                <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground transition-colors" />
+                <Separator orientation="vertical" className="mx-2 h-4 bg-border/40" />
+                <h1 className="flex-1 truncate text-sm font-semibold tracking-tight text-foreground/90">{title}</h1>
                 {branches.length > 0 && (
                     <BranchSwitcher
                         conversationId={conversationId}

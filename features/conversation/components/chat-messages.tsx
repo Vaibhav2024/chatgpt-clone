@@ -10,9 +10,11 @@ import type { UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../utils/query-keys";
 
+import { MessageResponse } from "@/components/ai-elements/message";
+
 function MessagePart({ part }: { part: any }) {
     if (part.type === "text") {
-        return <p className="whitespace-pre-wrap">{part.text}</p>;
+        return <MessageResponse>{part.text}</MessageResponse>;
     }
 
     // Tool invocation part shape (AI SDK v5/v6): part.type === "tool-webSearch"
@@ -83,13 +85,13 @@ function BranchFromHereButton({
         <button
             onClick={handleClick}
             disabled={isLoading}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground disabled:opacity-50"
+            className="opacity-0 group-hover:opacity-100 transition-all duration-200 text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/80 border border-border/30 px-2.5 py-0.5 rounded-full shadow-xs cursor-pointer disabled:opacity-50 select-none"
             title="Branch from here"
         >
             {isLoading
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : <GitBranchPlus className="h-3.5 w-3.5" />}
-            Branch from here
+                ? <Loader2 className="h-3 w-3 animate-spin" />
+                : <GitBranchPlus className="h-3 w-3" />}
+            <span>Branch</span>
         </button>
     );
 }
@@ -105,28 +107,37 @@ export function ChatMessages({
 }) {
     return (
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-            {messages.map((message) => (
-                <div
-                    key={message.id}
-                    className={cn(
-                        "group flex flex-col gap-1",
-                        message.role === "user" ? "items-end" : "items-start"
-                    )}
-                >
+            <div className="mx-auto w-full max-w-3xl space-y-6">
+                {messages.map((message) => (
                     <div
+                        key={message.id}
                         className={cn(
-                            "rounded-lg px-4 py-2 max-w-[80%]",
-                            message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                            "group flex flex-col gap-2 transition-all duration-300 animate-in fade-in-50 slide-in-from-bottom-2",
+                            message.role === "user" ? "items-end" : "items-start"
                         )}
                     >
-                        {message.parts.map((part, i) => (
-                            <MessagePart key={i} part={part} />
-                        ))}
-                    </div>
+                        <div
+                            className={cn(
+                                "relative px-4.5 py-3 text-[15px] leading-relaxed transition-shadow duration-200",
+                                message.role === "user" 
+                                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm shadow-sm max-w-[85%]" 
+                                    : "bg-transparent text-foreground max-w-full px-0 py-1"
+                            )}
+                        >
+                            {message.parts.map((part, i) => (
+                                <MessagePart key={i} part={part} />
+                            ))}
+                        </div>
 
-                    <BranchFromHereButton conversationId={conversationId} messageId={message.id} />
-                </div>
-            ))}
+                        <div className={cn(
+                            "flex items-center",
+                            message.role === "user" ? "justify-end" : "justify-start"
+                        )}>
+                            <BranchFromHereButton conversationId={conversationId} messageId={message.id} />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
