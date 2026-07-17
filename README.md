@@ -7,7 +7,7 @@ ChaiGPT is a minimalistic, high-performance, and feature-rich ChatGPT clone buil
 ## 📸 Tool Calling in Action
 Below is a screenshot demonstrating the real-time search tool calling capability:
 
-![Web Search Tool Calling](/tool_calling.png)
+![Logo](public/tool_calling.png)
 
 ---
 
