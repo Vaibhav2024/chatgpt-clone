@@ -1,4 +1,3 @@
-// lib/search.ts
 interface SearchResult {
     title: string;
     url: string;

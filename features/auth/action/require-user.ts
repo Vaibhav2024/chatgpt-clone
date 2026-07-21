@@ -2,16 +2,17 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
+import { onBoard } from "./onboard";
 
 export async function requireUser() {
     const { userId } = await auth.protect();
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
         where: {clerkId: userId}
     })
 
     if(!user) {
-        throw new Error("User not found complete onboarding first")
+        user = await onBoard();
     }
 
     return user;
