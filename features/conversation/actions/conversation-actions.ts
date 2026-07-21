@@ -30,7 +30,14 @@ export async function listConversation():Promise<ConversationListItem[]> {
     const user = await requireUser();
 
     return prisma.conversation.findMany({
-        where: {userId: user.id, isArchived: false},
+
+        where: {
+            userId: user.id,
+            isArchived: false,
+            // Only show conversations that have at least one message —
+            // this prevents empty "ghost" chats from appearing in the sidebar
+            messages: { some: {} },
+        },
         orderBy: [{ isPinned: "desc"}, { lastMessageAt: "desc" }],
         select: {
             id: true,
@@ -43,6 +50,7 @@ export async function listConversation():Promise<ConversationListItem[]> {
         }
     })
 }
+
 
 export async function getConversation(conversationId: string) {
     const user = await requireUser()

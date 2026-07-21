@@ -10,10 +10,10 @@ export default async function ConversationPage({
     searchParams,
 }: {
     params: Promise<{ id: string }>;
-    searchParams: Promise<{ branch?: string }>;
+    searchParams: Promise<{ branch?: string; firstMessage?: string }>;
 }) {
     const { id: conversationId } = await params;
-    const { branch: activeBranchId } = await searchParams;
+    const { branch: activeBranchId, firstMessage } = await searchParams;
 
     // Guard against stale /c/undefined URLs
     if (!conversationId || conversationId === "undefined") {
@@ -50,6 +50,7 @@ export default async function ConversationPage({
             branches={branches}
             activeBranch={activeBranch}
             initialMessages={messages}
+            firstMessage={firstMessage}
         />
     );
 }

@@ -1,9 +1,5 @@
-import { startNewChat } from '@/features/home/actions/start-new-chat'
-import { redirect } from 'next/navigation'
+import { NewChatView } from '@/features/home/components/new-chat-view'
 
-const page = async () => {
-    const { conversationId, branchId } = await startNewChat()
-    redirect(`/c/${conversationId}?branch=${branchId}`)
+export default function HomePage() {
+    return <NewChatView />
 }
-
-export default page

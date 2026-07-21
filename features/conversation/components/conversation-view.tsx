@@ -3,8 +3,9 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
+import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
@@ -20,6 +21,8 @@ type ConversationViewProps = {
     branches: any[];
     activeBranch: any;
     initialMessages: UIMessage[];
+    /** When set, the message is auto-sent on mount (lazy new-chat flow). */
+    firstMessage?: string;
 };
 
 export const ConversationView = ({
@@ -27,9 +30,12 @@ export const ConversationView = ({
     branches,
     activeBranch,
     initialMessages,
+    firstMessage,
 }: ConversationViewProps) => {
     const queryClient = useQueryClient();
+    const router = useRouter();
     const { data: conversations } = useConversations();
+    const hasSentFirstMessage = useRef(false);
 
     const transport = useMemo(
         () =>
@@ -59,6 +65,21 @@ export const ConversationView = ({
             toast.error(error.message);
         },
     });
+
+    // Auto-send the first message when navigating from the new-chat home page.
+    // We wait until the chat is ready and guard with a ref to prevent double-sends.
+    useEffect(() => {
+        if (
+            firstMessage &&
+            !hasSentFirstMessage.current &&
+            status === "ready"
+        ) {
+            hasSentFirstMessage.current = true;
+            void sendMessage({ text: firstMessage });
+            // Clean up the URL so refreshing the page doesn't re-send the message
+            router.replace(`/c/${conversationId}?branch=${activeBranch.id}`);
+        }
+    }, [firstMessage, status, sendMessage, router, conversationId, activeBranch.id]);
 
     const title =
         conversations?.find((item) => item.id === conversationId)?.title ?? "Chat";
